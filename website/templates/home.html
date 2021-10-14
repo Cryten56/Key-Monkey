@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block head %} <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+ {% endblock %}
+
+{% block content %} 
+<div class="container">
+    <div class="quote-display" id="quoteDisplay"></div>
+    <textarea  id="quoteInput" class="quote-input" autofocus></textarea>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const quoteDisplayElement = document.getElementById("quoteDisplay");
+    renderSentence("{{ sentence }}")
+    })
+</script>
+
+{% endblock%}
