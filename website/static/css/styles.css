@@ -3,9 +3,6 @@
 }
 
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
     margin: 0;
     /* background-color: #1E0555; */
@@ -13,14 +10,6 @@ body {
 
 .quote-input {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-}
-
-.container {
-    padding: 1rem;
-    border-radius: .5rem;
-    width: 700px;
-    max-width: 90%;
-
 }
 
 .timer {
@@ -32,9 +21,10 @@ body {
 }
 
 .quote-display {
-    margin-bottom: 1rem;
-    margin-left: calc(1rem + 2px);
-    margin-right: calc(1rem + 2px);
+    margin: 50px auto;
+    text-align: center;
+    font-size: 2rem;
+    max-width: 700px;
 }
 
 .quote-input {

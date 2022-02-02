@@ -2,20 +2,109 @@
 
 {% block title %}Home{% endblock %}
 
-{% block head %} <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
- {% endblock %}
+{% block head %} 
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+{% endblock %}
 
 {% block content %} 
-<div class="container">
-    <div class="quote-display" id="quoteDisplay"></div>
-    <textarea  id="quoteInput" class="quote-input" autofocus></textarea>
+<div class="container-md" id="quotebox">
+    <div class="quote-display d-flex flex-wrap" id="quoteDisplay"></div>
 </div>
 
+<script source="website\static\index.js"></script>
+
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-    const quoteDisplayElement = document.getElementById("quoteDisplay");
-    renderSentence("{{ sentence }}")
+document.addEventListener("DOMContentLoaded", () => {
+  const words = `{{ sentence|safe }}` //safe stops characters being escaped, the backticks are needed because the 
+  //the list `sentence` contains "
+  // console.log(words)
+  renderSentence(words) // renderSentence is a function that takes the string literal, and converts it into elements 
+  let wordsArr = JSON.parse(words); // converts the string
+  let wordsDict = wordsArr.map(x => ({word: x, wordTime: null, letters: new Array(x.length)}))
+
+  let backspaceFlag = false
+  let charnum = 0
+  let nextKeystrokeTime 
+  let keystrokeTime
+  window.addEventListener('keydown', (event) => {
+    const charCode = event.key.charCodeAt();
+    let currentSpan = document.querySelector(`span[data-char-num="${charnum}"]`) 
+    if (event.key.length === 1 && (charCode >= 65 && charCode  <= 90) || (charCode >= 97 && charCode <= 122)) {     
+      if ((charnum !== 0) || (backspaceFlag === true)) {
+        backspaceFlag = false
+        nextKeystrokeTime = new Date().getTime()
+        keystrokeTimeDifference = nextKeystrokeTime - keystrokeTime 
+        keystrokeTime = nextKeystrokeTime
+        whichWord = currentSpan.parentElement.getAttribute("data-word-num")
+        whichLetter = currentSpan.getAttribute("word-char-num")
+        wordsDict[whichWord].letters[whichLetter] = keystrokeTimeDifference 
+        console.log(wordsDict[whichWord].letters[whichLetter])
+      } else {
+        keystrokeTime = new Date().getTime()
+      }
+      
+      
+      let currentCharinSpan = currentSpan.innerText
+      if (event.key === currentCharinSpan) {
+      currentSpan.classList.add("correct")
+      currentSpan.classList.remove("incorrect")
+      } else if (event.key !== currentCharinSpan) {
+      currentSpan.classList.add("incorrect")
+      currentSpan.classList.remove("correct")} 
+      charnum = charnum+1 
+    } 
+    
+    if (event.key==="Backspace") { 
+      
+      backspaceFlag = true
+      if (charnum > 0) {
+        charnum = charnum-1
+      }   
+      currentSpan = document.querySelector(`span[data-char-num="${charnum}"]`)  
+      console.log(charnum)
+      currentSpan.classList.remove("correct");
+      currentSpan.classList.remove("incorrect");
+    } else if (event.key==="Backspace" && event.ctrlKey === True){}
+    
+    
+    if (event.key===" ") {  
+      spaceFlag = true
+      whichWord = currentSpan.parentElement.getAttribute("data-word-num")
+      whichLetter = currentSpan.getAttribute("word-char-num")
+      if ((whichLetter==0) && (charnum !== 0)) {
+        const reducer = (a, b) => a + b
+        nextKeystrokeTime = new Date().getTime()
+        keystrokeTimeDifference = nextKeystrokeTime - keystrokeTime 
+        keystrokeTime = nextKeystrokeTime
+        if ((whichWord-1)===(0)) {
+          let wordTime = wordsDict[whichWord-1].letters.reduce(reducer, keystrokeTimeDifference)
+          console.log(wordTime)
+        } else if ((whichWord)=(wordsDict.length)) {
+          
+        } else {
+          let wordTime = wordsDict[whichWord-1].letters.reduce(reducer, 0)
+          console.log(wordTime)
+        }
+      }
+    } 
     })
+  
+  // const form = document.createElement('form');
+  // form.method = 'POST';
+  // form.action = '/results';
+
+  // const formInput = document.createElement('input');
+  // input.type = 'hidden';
+  // input.name = 'data';
+  // input.value = JSON.stringify(YOUR OBJECT WITH DATA HERE);
+
+  // form.appendChild(formInput);
+  // document.body.appendChild(form);
+  // form.submit();
+})
+
+
 </script>
 
-{% endblock%}
+
+{% endblock %}

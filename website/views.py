@@ -1,14 +1,12 @@
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request
 from flask.helpers import url_for
 from flask_login import login_required, current_user
-from sqlalchemy.sql.functions import user
-from werkzeug.utils import redirect
-from .models import User, Note, Word, UserWords
+from .models import Word 
 from flask_login import login_required, current_user
 from . import db
-import json
-import os
 import random
+from sqlalchemy.sql.expression import func
+import json
 
 views = Blueprint('views', __name__)
 
@@ -18,17 +16,8 @@ views = Blueprint('views', __name__)
 @login_required
 def home():
     if request.method == 'GET':
-        listOfWords = []
-        sentence = ""
-        for i in range(5):
-            inte = random.randint(1, 5)
-            word = Word.query.filter_by(id=inte).first()
-            listOfWords.append(word.data)
-        for word in listOfWords: 
-            sentence += str(word) + " "
-        return render_template("home.html", user=current_user, sentence=sentence)
+        listOfWordTuples = db.session.query(Word.data).order_by(func.random()).limit(20).all() # Returns a list of 20 words [('word',), ('word2,',),"('word3',)]
+        listOfWordsJSON = json.dumps(list(map(lambda word: word[0], listOfWordTuples))) # Returns a list of 20 words as JSON string '["word", "word2", "word3"]'
+        return render_template("home.html", user=current_user, sentence=listOfWordsJSON)
 
     return render_template("home.html", user=current_user)
-
-
-
