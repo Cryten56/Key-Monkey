@@ -8,10 +8,8 @@ import random
 from sqlalchemy.sql.expression import func
 import json
 
-views = Blueprint('views', __name__)
+views = Blueprint('views', __name__) # creates a blueprint named  views
 
-
-    
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():

@@ -24,4 +24,3 @@ class UserWords(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     word_id = db.Column(db.Integer, db.ForeignKey('word.id'))
     time = db.Column(db.Integer)
-

@@ -16,95 +16,93 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const words = `{{ sentence|safe }}` //safe stops characters being escaped, the backticks are needed because the 
-  //the list `sentence` contains "
-  // console.log(words)
+  // the list `sentence` contains "
   renderSentence(words) // renderSentence is a function that takes the string literal, and converts it into elements 
-  let wordsArr = JSON.parse(words); // converts the string
-  let wordsDict = wordsArr.map(x => ({word: x, wordTime: null, letters: new Array(x.length)}))
+  let wordsArr = JSON.parse(words); // converts the string into javascript object
+  let wordsDict = wordsArr.map(x => ({word: x, wordTime: null, letters: new Array(x.length)})) 
+  /* converts the array of words into an array of dictionaries, creating location to store the times
+  that the user generates */
 
   let backspaceFlag = false
-  let charnum = 0
+  let charnum = 0 // used to keep track of what letter the user is on
   let nextKeystrokeTime 
   let keystrokeTime
-  window.addEventListener('keydown', (event) => {
-    const charCode = event.key.charCodeAt();
-    let currentSpan = document.querySelector(`span[data-char-num="${charnum}"]`) 
-    if (event.key.length === 1 && (charCode >= 65 && charCode  <= 90) || (charCode >= 97 && charCode <= 122)) {     
-      if ((charnum !== 0) || (backspaceFlag === true)) {
-        backspaceFlag = false
+  window.addEventListener('keydown', (event) => { // The user interacts with the page via keybaord events
+    let charCode = event.key.charCodeAt(); // Gets the unicode reference number for the key
+    let currentSpan = document.querySelector(`span[data-char-num="${charnum}"]`) // Gets the element that contains the current letter being worked on
+    let whichWord = currentSpan.parentElement.getAttribute("data-word-num") // Gets the word number
+    let whichLetter = currentSpan.getAttribute("word-char-num") // gets the index of the letter within its word
+    let currentCharinSpan = currentSpan.innerText // gets the letter as a character
+    // stores the element that is the character which has been typed
+    // as a variable
+    if (event.key.length === 1 && (charCode >= 65 && charCode  <= 90) || (charCode >= 97 && charCode <= 122)) {  // makes sure the key pressed is a letter
+      // key length has to be one because the key "alt" has the same charcode as "a", the charcode values filter for letters  
+      if ((charnum !== 0) || (backspaceFlag === true)) { 
+        /* This records the time taken between the current keypress and the previous one,
+        only applicable for 2nd letter onwards, or if they user has backspaced back to the first letter */
+        backspaceFlag = false 
+        spaceFlag = false
         nextKeystrokeTime = new Date().getTime()
         keystrokeTimeDifference = nextKeystrokeTime - keystrokeTime 
         keystrokeTime = nextKeystrokeTime
-        whichWord = currentSpan.parentElement.getAttribute("data-word-num")
-        whichLetter = currentSpan.getAttribute("word-char-num")
-        wordsDict[whichWord].letters[whichLetter] = keystrokeTimeDifference 
-        console.log(wordsDict[whichWord].letters[whichLetter])
+        whichWord = currentSpan.parentElement.getAttribute("data-word-num") // finds what word currently being typed
+        whichLetter = currentSpan.getAttribute("word-char-num") 
+        wordsDict[whichWord].letters[whichLetter] = keystrokeTimeDifference  // Stores the time in the array
+        
       } else {
-        keystrokeTime = new Date().getTime()
+        keystrokeTime = new Date().getTime() // for the first letter in the sentence, only the time when pressed is recorded
+      }
+      
+      if (whichLetter === 0) {
+        wordTimeStart = new Date().getTime()
       }
       
       
-      let currentCharinSpan = currentSpan.innerText
+      // changes the colour of the character to reflect whether it was 
+      // typed correctly
       if (event.key === currentCharinSpan) {
       currentSpan.classList.add("correct")
       currentSpan.classList.remove("incorrect")
       } else if (event.key !== currentCharinSpan) {
       currentSpan.classList.add("incorrect")
       currentSpan.classList.remove("correct")} 
-      charnum = charnum+1 
+      charnum = charnum+1 //
     } 
     
-    if (event.key==="Backspace") { 
-      
+    if (event.key==="Backspace") {   
       backspaceFlag = true
-      if (charnum > 0) {
+      if (charnum > 0) { //unless its the first letter, move the "caret" back one place
         charnum = charnum-1
       }   
+
       currentSpan = document.querySelector(`span[data-char-num="${charnum}"]`)  
       console.log(charnum)
       currentSpan.classList.remove("correct");
       currentSpan.classList.remove("incorrect");
+
     } else if (event.key==="Backspace" && event.ctrlKey === True){}
     
     
     if (event.key===" ") {  
-      spaceFlag = true
-      whichWord = currentSpan.parentElement.getAttribute("data-word-num")
-      whichLetter = currentSpan.getAttribute("word-char-num")
-      if ((whichLetter==0) && (charnum !== 0)) {
-        const reducer = (a, b) => a + b
+      spaceFlag = true 
+      if (currentCharinSpan === " ") { 
+        // If the word is finished, and space is on the right place
         nextKeystrokeTime = new Date().getTime()
         keystrokeTimeDifference = nextKeystrokeTime - keystrokeTime 
         keystrokeTime = nextKeystrokeTime
-        if ((whichWord-1)===(0)) {
-          let wordTime = wordsDict[whichWord-1].letters.reduce(reducer, keystrokeTimeDifference)
-          console.log(wordTime)
-        } else if ((whichWord)=(wordsDict.length)) {
+        let wordTimeEnd = new Date().getTime()
+        let wordTime = wordTimeEnd - wordTimeStart
+        if ((whichWord)===(0)) { // if the first word
+          
+        } else if ((whichWord)=(wordsDict.length)) { // If end of sentence
           
         } else {
-          let wordTime = wordsDict[whichWord-1].letters.reduce(reducer, 0)
-          console.log(wordTime)
+          wordsDict[whichWord].wordTime = wordTime
         }
       }
-    } 
+    }
+    console.log(wordsDict) 
     })
-  
-  // const form = document.createElement('form');
-  // form.method = 'POST';
-  // form.action = '/results';
-
-  // const formInput = document.createElement('input');
-  // input.type = 'hidden';
-  // input.name = 'data';
-  // input.value = JSON.stringify(YOUR OBJECT WITH DATA HERE);
-
-  // form.appendChild(formInput);
-  // document.body.appendChild(form);
-  // form.submit();
 })
-
-
 </script>
-
-
 {% endblock %}
