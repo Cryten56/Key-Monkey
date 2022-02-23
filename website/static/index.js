@@ -16,7 +16,7 @@ function renderSentence(jsonQuote) {
     wordDiv.classList.add("word")
     sentenceDisplayElement.appendChild(wordDiv);
     wordDiv.setAttribute("data-word-num", wordNum);
-    
+    wordDiv.setAttribute("extraCharacters", 0)
     word.split("").forEach((character, j) => { 
       /*Each letter is converted into a span, and numbered by their position in the sentence and 
       thier poistion in the word*/

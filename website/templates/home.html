@@ -31,12 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let wordTimeEnd 
   let backstop = 0
   window.addEventListener('keydown', (event) => { // The user interacts with the page via keybaord events
-    console.log(document.querySelector(`span[data-char-num="${charnum}"]`))
     let charCode = event.key.charCodeAt(); // Gets the unicode reference number for the key
     let currentSpan = document.querySelector(`span[data-char-num="${charnum}"]`) // Gets the element that contains the current letter being worked on
-    let whichWord = currentSpan.parentElement.getAttribute("data-word-num") // Gets the word number
-    console.log(whichWord)
-    console.log(wordsDict.length-1)
+    let whichWordNo = currentSpan.parentElement.getAttribute("data-word-num") // Gets the word number
+    let numOfExtraCharacters = currentSpan.parentElement.getAttribute("extraCharacters")
     let whichLetter = currentSpan.getAttribute("word-char-num") // gets the index of the letter within its word
     let currentCharinSpan = currentSpan.innerText // gets the letter as a character
     // stores the element that is the character which has been typed
@@ -58,37 +56,51 @@ document.addEventListener("DOMContentLoaded", () => {
       if (event.key === currentCharinSpan) {
       currentSpan.classList.add("correct")
       currentSpan.classList.remove("incorrect")
-        if ((!(backspaceFlag)) && charnum !== 0 ) {wordsDict[whichWord].letters[whichLetter] = keystrokeTimeDifference}  // Doesn't store letter time after backspace, because timing will be wrong
-      } else if (event.key !== currentCharinSpan) {
-      currentSpan.classList.add("incorrect")
-      currentSpan.classList.remove("correct")
+        if ((!(backspaceFlag)) && charnum !== 0 ) {wordsDict[whichWordNo].letters[whichLetter] = keystrokeTimeDifference}  // Doesn't store letter time after backspace, because timing will be wrong
+      charnum++
+      }else if (event.key !== currentCharinSpan) {
+        if (currentSpan.innerHTML == "&nbsp;") {
+          const extraCharacter = document.createElement('span')
+          extraCharacter.innerText = event.key
+          extraCharacter.classList.add("extra")
+          currentSpan.parentElement.insertBefore(extraCharacter, currentSpan)
+          numOfExtraCharacters++
+          currentSpan.parentElement.setAttribute("extraCharacters", numOfExtraCharacters)
+        } else {
+          currentSpan.classList.add("incorrect")
+          currentSpan.classList.remove("correct")
+          charnum++
+        }
+        
       } 
       if (whichLetter == 0) {
         wordTimeStart = new Date().getTime() // starts the word timing
         if (backspaceFlag) {
-          for (let i = 0; i < ((wordsDict[whichWord].letters.length)-1); i++) { 
+          for (let i = 0; i < ((wordsDict[whichWordNo].letters.length)-1); i++) { 
             /* Restarting words is allowed, clears the
             letter times but not the word times */ 
-            wordsDict[whichWord].letters[i] = null
+            wordsDict[whichWordNo].letters[i] = null
           }
         }
-      } 
+      }
       backspaceFlag = false 
       spaceFlag = false
       isStart=false
-      charnum++ 
+      
     } 
 
     if (event.key==="Backspace") {   
       backspaceFlag = true
-      if (charnum > backstop) { //unless its the first letter, or a completed word, move the "caret" back one place
+      if ((currentSpan.parentElement.getAttribute("extraCharacters")) != 0) {
+        numOfExtraCharacters--
+        currentSpan.parentElement.setAttribute("extraCharacters", numOfExtraCharacters)
+        currentSpan.parentElement.lastElementChild.previousElementSibling.remove()
+      }  else if (charnum > backstop) { //unless its the first letter, or a completed word, move the "caret" back one place
         charnum = charnum-1
+        currentSpan = document.querySelector(`span[data-char-num="${charnum}"]`)  // moves the caret back 
+        currentSpan.classList.remove("correct");
+        currentSpan.classList.remove("incorrect");
       }
-
-      currentSpan = document.querySelector(`span[data-char-num="${charnum}"]`)  // moves the caret back 
-      console.log(charnum)
-      currentSpan.classList.remove("correct");
-      currentSpan.classList.remove("incorrect");
 
     } else if (event.key==="Backspace" && event.ctrlKey === True){
 
@@ -96,29 +108,11 @@ document.addEventListener("DOMContentLoaded", () => {
     
     
     if (event.key===" ") {  
-      spaceFlag = true 
-      console.log(document.querySelector(`span[data-char-num="${charnum}"]`))
-      if (currentSpan.getAttribute("is-space")) { 
-        // If the word is finished, and space is on the right place
-        OldKeystrokeTime = new Date().getTime()
-        let wordTimeEnd = new Date().getTime()
-        let wordTime = wordTimeEnd - wordTimeStart
-        wordsDict[whichWord].wordTime = wordTime
-        console.log(wordsDict)
-        backstop = charnum+1
-        if ((document.querySelector(`span[data-char-num="${charnum}"]`)) != (null)) {
-          charnum++
-        }
-          
-      } else if (!(currentSpan.getAttribute("is-space"))) {
-        while (whichLetter != 0) {
-          if ((document.querySelector(`span[data-char-num="${charnum}"]`)) != (null)) {
-            charnum++
-          } 
-          startOfNextWord = document.querySelector(`span[data-char-num="${charnum}"]`)
-          whichLetter = startOfNextWord.getAttribute("word-char-num")
-        } 
-      if (whichWord==(wordsDict.length-1)) { // If end of sentence
+      spaceFlag = true
+      extraCharacters = 0
+      console.log(whichWordNo)
+      console.log(whichLetter)
+      if (whichWordNo==(wordsDict.length-1)) { // If end of sentence
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = '/';
@@ -131,7 +125,22 @@ document.addEventListener("DOMContentLoaded", () => {
         form.appendChild(formInput);
         document.body.appendChild(form);
         form.submit();
-      }
+      } else if (currentSpan.getAttribute("is-space")) { 
+        // If the word is finished, and space is on the right place
+        OldKeystrokeTime = new Date().getTime()
+        let wordTimeEnd = new Date().getTime()
+        let wordTime = wordTimeEnd - wordTimeStart
+        wordsDict[whichWordNo].wordTime = wordTime
+        console.log(wordsDict)
+        backstop = charnum+1
+        charnum++
+      } else if (!(currentSpan.getAttribute("is-space"))) {
+        while (whichLetter != 0) {
+          charnum++
+          startOfNextWord = document.querySelector(`span[data-char-num="${charnum}"]`)
+          whichLetter = startOfNextWord.getAttribute("word-char-num")
+        }
+        backstop = charnum
     } 
     console.log(charnum) 
   }})

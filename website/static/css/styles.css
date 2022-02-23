@@ -8,18 +8,6 @@ body {
     /* background-color: #1E0555; */
 }
 
-.quote-input {
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-}
-
-.timer {
-    position: absolute;
-    top: 2rem;
-    font-size: 3rem;
-    /* color: #F0DB4F; */
-    text-align: left;
-}
-
 .quote-display {
     margin: 50px auto;
     text-align: center;
@@ -27,17 +15,6 @@ body {
     max-width: 700px;
 }
 
-.quote-input {
-    background-color: transparent;
-    outline: none;
-    width: 100%;
-    height: 8rem;
-    margin: auto;
-    resize: none;
-    padding: .5rem 1rem;
-    font-size: 1rem;
-    border-radius: .5rem;
-}
 
 .quote-input:focus {
     border-color: black;
@@ -50,4 +27,8 @@ body {
 .incorrect {
     color: red;
     text-decoration: underline;
+}
+
+.extra {
+    color: #ffbf00;
 }
