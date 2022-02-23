@@ -31,9 +31,12 @@ function renderSentence(jsonQuote) {
     const charSpan = document.createElement('span')
     charSpan.setAttribute("word-char-num", wordCharNum);
     charSpan.setAttribute("data-char-num", charNum);
-    charSpan.innerText = " ";
+    charSpan.setAttribute("is-Space", true);
+    charSpan.innerHTML = '&nbsp';
     wordDiv.appendChild(charSpan);
-    wordDiv.classList.add("mx-1") // bootstrap
+    // wordDiv.classList.add("mx-1") // bootstrap
+    ++charNum;
+    ++wordCharNum
     wordNum++
 
 })}
