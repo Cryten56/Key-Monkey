@@ -15,9 +15,11 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+  console.log(18)
   const words = `{{ sentence|safe }}` //safe stops characters being escaped, the backticks are needed because the 
   // the list `sentence` contains "
   renderSentence(words) // renderSentence is a function that takes the string literal, and converts it into elements 
+  console.log(21)
   let wordsArr = JSON.parse(words); // converts the string into javascript object
   let wordsDict = wordsArr.map(x => ({word: x, wordTime: null, incorrectWord: null, letters: new Array(x.length)})) 
   /* converts the array of words into an array of dictionaries, creating location to store the times
@@ -30,7 +32,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let wordTimeStart
   let wordTimeEnd 
   let backstop = 0
+  console.log(33)
   window.addEventListener('keydown', (event) => { // The user interacts with the page via keybaord events
+    console.log(34)
+    console.log(event)
     let charCode = event.key.charCodeAt(); // Gets the unicode reference number for the key
     let currentSpan = document.querySelector(`span[data-char-num="${charnum}"]`) // Gets the element that contains the current letter being worked on
     let whichWordNo = currentSpan.parentElement.getAttribute("data-word-num") // Gets the word number
@@ -39,26 +44,33 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentCharinSpan = currentSpan.innerText // gets the letter as a character
     // stores the element that is the character which has been typed
     // as a variable
+    console.log(47)
     if (event.key.length === 1 && (charCode >= 65 && charCode  <= 90) || (charCode >= 97 && charCode <= 122)) {  // makes sure the key pressed is a letter
+      console.log(49)
       // key length has to be one because the key "alt" has the same charcode as "a", the charcode values filter for letters  
       if (charnum !== 0) { 
+        console.log(51)
         /* This records the time taken between the current keypress and the previous one,
         only applicable for 2nd letter onwards, */
         newKeystrokeTime = new Date().getTime()
         keystrokeTimeDifference = newKeystrokeTime - OldKeystrokeTime 
         OldKeystrokeTime = newKeystrokeTime
       } else {
+        console.log(59)
         OldKeystrokeTime = new Date().getTime() // for the first letter in the sentence, only the time when pressed is recorded
       }
-      
+      console.log(62)
       // changes the colour of the character to reflect whether it was 
       // typed correctly
       if (event.key === currentCharinSpan) {
-      currentSpan.classList.add("correct")
-      currentSpan.classList.remove("incorrect")
-        if ((!(backspaceFlag)) && charnum !== 0 ) {wordsDict[whichWordNo].letters[whichLetter] = keystrokeTimeDifference}  // Doesn't store letter time after backspace, because timing will be wrong
-      charnum++
-      }else if (event.key !== currentCharinSpan) {
+        console.log(66)
+        currentSpan.classList.add("correct")
+        currentSpan.classList.remove("incorrect")
+          if ((!(backspaceFlag)) && charnum !== 0 ) {wordsDict[whichWordNo].letters[whichLetter] = keystrokeTimeDifference}  // Doesn't store letter time after backspace, because timing will be wrong
+        charnum++
+        console.log(71)
+      } else if (event.key !== currentCharinSpan) {
+        console.log(73)
         if (currentSpan.innerHTML == "&nbsp;") {
           const extraCharacter = document.createElement('span')
           extraCharacter.innerText = event.key
@@ -66,13 +78,16 @@ document.addEventListener("DOMContentLoaded", () => {
           currentSpan.parentElement.insertBefore(extraCharacter, currentSpan)
           numOfExtraCharacters++
           currentSpan.parentElement.setAttribute("extraCharacters", numOfExtraCharacters)
+          console.log(81)
         } else {
           currentSpan.classList.add("incorrect")
           currentSpan.classList.remove("correct")
           charnum++
+          console.log(86)
         }
-        
+        console.log(88)
       } 
+      console.log(90)
       if (whichLetter == 0) {
         wordTimeStart = new Date().getTime() // starts the word timing
         if (backspaceFlag) {
@@ -86,46 +101,38 @@ document.addEventListener("DOMContentLoaded", () => {
       backspaceFlag = false 
       spaceFlag = false
       isStart=false
+      console.log(104)
       
     } 
 
     if (event.key==="Backspace") {   
       backspaceFlag = true
+      console.log(94)
       if ((currentSpan.parentElement.getAttribute("extraCharacters")) != 0) {
         numOfExtraCharacters--
         currentSpan.parentElement.setAttribute("extraCharacters", numOfExtraCharacters)
+        console.log(114)
         currentSpan.parentElement.lastElementChild.previousElementSibling.remove()
       }  else if (charnum > backstop) { //unless its the first letter, or a completed word, move the "caret" back one place
         charnum = charnum-1
         currentSpan = document.querySelector(`span[data-char-num="${charnum}"]`)  // moves the caret back 
         currentSpan.classList.remove("correct");
         currentSpan.classList.remove("incorrect");
+        console.log(121)
       }
 
     } else if (event.key==="Backspace" && event.ctrlKey === True){
 
     }
     
-    
+    console.log(128)
     if (event.key===" ") {  
       spaceFlag = true
       extraCharacters = 0
       console.log(whichWordNo)
       console.log(whichLetter)
-      if (whichWordNo==(wordsDict.length-1)) { // If end of sentence
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '/';
-  
-        const formInput = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'data';
-        input.value = JSON.stringify(wordsDict);
-
-        form.appendChild(formInput);
-        document.body.appendChild(form);
-        form.submit();
-      } else if (currentSpan.getAttribute("is-space")) { 
+      console.log(134)
+      if (currentSpan.getAttribute("is-space")) { 
         // If the word is finished, and space is on the right place
         OldKeystrokeTime = new Date().getTime()
         let wordTimeEnd = new Date().getTime()
@@ -133,17 +140,47 @@ document.addEventListener("DOMContentLoaded", () => {
         wordsDict[whichWordNo].wordTime = wordTime
         console.log(wordsDict)
         backstop = charnum+1
-        charnum++
-      } else if (!(currentSpan.getAttribute("is-space"))) {
-        while (whichLetter != 0) {
+        if (document.querySelector(`span[data-char-num="${charnum}"]`) !== "null") {
           charnum++
-          startOfNextWord = document.querySelector(`span[data-char-num="${charnum}"]`)
-          whichLetter = startOfNextWord.getAttribute("word-char-num")
         }
+        console.log(146)
+      } else if (!(currentSpan.getAttribute("is-space"))) {
+        console.log("aaaaaaaaaaaaaaaah")
+        while (whichLetter != 0) {
+          console.log(150)
+          if (document.querySelector(`span[data-char-num="${charnum}"]`) !== "null")   
+            console.log(152)
+            charnum++
+            console.log(154)
+          }
+          console.log(156)
+          startOfNextWord = document.querySelector(`span[data-char-num="${charnum}"]`)
+          console.log(158)
+          whichLetter = startOfNextWord.getAttribute("word-char-num")
+          console.log(160)
+        }
+        console.log(162)
         backstop = charnum
-    } 
-    console.log(charnum) 
-  }})
+        console.log(164)
+      if (whichWordNo==(wordsDict.length-1)) { // If end of sentence
+      console.log(166)
+        // const form = document.createElement('form');
+      // form.method = 'POST';
+      // form.action = '/';
+
+      // const formInput = document.createElement('input');
+      // input.type = 'hidden';
+      // input.name = 'data';
+      // input.value = JSON.stringify(wordsDict);
+
+      // form.appendChild(formInput);
+      // document.body.appendChild(form);
+      // form.submit();
+      console.log(179)
+      }    
+    }
+  console.log(charnum)
+  })
 })
 </script>
 {% endblock %}
