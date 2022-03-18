@@ -2,9 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
-
-
-db = SQLAlchemy() #createes the sqlalchemy object
+db = SQLAlchemy() #creates the sqlalchemy object
 DB_NAME = "database.db" 
 
 def create_app():

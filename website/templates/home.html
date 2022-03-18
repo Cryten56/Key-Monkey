@@ -64,7 +64,7 @@
         }
 
         
-        if (event.key === currentCharinSpan) { //if correct
+        if (event.key === currentCharinSpan) { // if correct
           currentSpan.classList.add("correct") // change class to correct
           currentSpan.classList.remove("incorrect")
           if ((!(backspaceFlag)) && charnum !== 0) { // If backspace wasn't the last key typed, save the time
@@ -184,7 +184,8 @@
           testTime = testTimeEnd - testTimeStart
           console.log(testTime)
           console.log("Timer Ended")
-          theData = processTest (wordsDict, testTime)
+          theData = processTest(wordsDict, testTime)
+          
 
           const form = document.createElement('form');
           form.method = 'POST';
@@ -192,13 +193,13 @@
 
           const formInput = document.createElement('input');
           formInput.type = 'hidden';
-          formInput.name = 'data';
+          formInput.name = 'theData';
           formInput.value = theData;
 
           form.appendChild(formInput);
           document.body.appendChild(form);
           form.submit();
-
+          
         }
       }
     })

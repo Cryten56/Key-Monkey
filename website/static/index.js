@@ -75,7 +75,7 @@ function processTest (wordsDict, testTime) {
   let amountofExtraLetters = 0
   let amountOfIncorrectLetters = 0
   let amountOfLettersIncSpace = 0
-  let amountofMissedLetters
+  let amountofMissedLetters = 0
   for (let i = 0; i < wordsDict.length; i++) {
     for (let ii = 0; ii < wordsDict.at(i).word.length; ii++) {
       if ((wordsDict.at(i).word.at(ii)) && (wordsDict.at(i).typedWord.at(ii))) {
@@ -89,14 +89,13 @@ function processTest (wordsDict, testTime) {
           wordsDict.at(i).letters[ii] = [wordsDict.at(i).letters.at(ii), "corrected"] 
         } else if ((wordsDict.at(i).typedWord.at(ii) !== wordsDict.at(i).word.at(ii))) {
           ++amountOfIncorrectLetters
-          wordsDict.at(i).letters.at[ii] = [wordsDict.at(i).letters.at(ii), "incorrect"] 
+          wordsDict.at(i).letters[ii] = [wordsDict.at(i).letters.at(ii), "incorrect"] 
         }     
       }  
     }
   }
   wordsDict.forEach((word, index) => {
     if (word.typedWord.length > word.word.length) {
-      console.log(word.typedWord.length)
       for (let i = ((word.word.length)-1); i < word.typedWord.length-1; i++) {
         wordsDict.at(index).letters.push([null, "extra"])
         ++amountofExtraLetters
@@ -134,7 +133,13 @@ function processTest (wordsDict, testTime) {
 
   let wpm = ((amountOfLettersInCorrectWordsIncSpaces/5)/(testTime/60000))
   let rawWpm = ((amountOfLettersIncSpace/5)/(testTime/60000))
-  let accuracy = (amountOfCorrectLetters/(amountOfCorrectedLetters+amountOfIncorrectLetters+amountofExtraLetters+amountofMissedLetters))
+  let accuracy 
+  if ((amountOfCorrectedLetters+amountOfIncorrectLetters+amountofExtraLetters+amountofMissedLetters) === 0) {
+    accuracy = 100
+  } else {
+    accuracy = (((amountOfCorrectLetters)/(amountOfCorrectLetters+amountOfCorrectedLetters+amountOfIncorrectLetters+amountofExtraLetters+amountofMissedLetters))*100)
+  }
+
   
         
         
@@ -151,6 +156,8 @@ function processTest (wordsDict, testTime) {
 
   const dataToSend = JSON.stringify({ testTime, testRawSpeed: rawWpm, testSpeed:wpm, testAcc:accuracy, processedTest });
   console.log(JSON.parse(dataToSend))
+  return dataToSend
+  
 
   // { testTime: xxx, processedTest: processedTest }
 }
