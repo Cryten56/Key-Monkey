@@ -13,17 +13,18 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
     firstName = db.Column(db.String(150))
-    test = db.relationship("Test")
+    test = db.relationship("Test", backref="user")
 
 class Test(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     userId = db.Column(db.Integer, db.ForeignKey('user.id'))
-    dateTime = db. Column(db.DateTime(timezone=True), default=func.now())
+    dateTime = db.Column(db.DateTime(timezone=True), default=func.now())
+    unixTime = db.Column(db.Integer)
     testTime = db.Column(db.Integer)
     speed = db.Column(db.Integer)
     rawSpeed = db.Column(db.Integer)
     accuracy = db.Column(db.Integer)
-    testWord = db.relationship("TestWord")
+    testWord = db.relationship("TestWord", backref="test")
     
 
 class TestWord(db.Model):
@@ -33,10 +34,10 @@ class TestWord(db.Model):
     time = db.Column(db.Integer)
     wordNum = db.Column(db.Integer)
     speed = db.Column(db.Integer)
-    correct = db.Column(db.Boolean)
-    incorrectWord = db.Column(db.String)
+    incorrectWord = db.Column(db.String(21))
     typedWord = db.Column(db.String(21))
-    testWordLetter = db.relationship("TestWordLetter")
+    wordCorrect = db.Column(db.Boolean)
+    testWordLetter = db.relationship("TestWordLetter", backref="test_word")
 
 class TestWordLetter(db.Model):
 
