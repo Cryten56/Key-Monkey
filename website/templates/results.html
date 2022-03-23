@@ -1,5 +1,78 @@
 {% extends "base.html" %}
  {% block title %}Results{% endblock %} 
  {% block content %}
-    {{ testData }}
+ {% block head %}
+ <style>
+    .small-margin {
+    padding-left:  2px;
+    padding-right: 2px;
+    }
+ </style>
+ {% endblock %}
+ <div class="container m-5">
+    <div class="d-flex flex-row justify-content-around flex-wrap">
+        <div class="flex-sm-column">
+            <span>WPM:</span>
+            <span id="wpm-span"></span>
+        </div>
+        <div class="flex-sm-column">
+            <span>Raw WPM:</span>
+            <span id="raw-wpm-span"></span>
+        </div>
+        <div class="flex-sm-column">
+            <span>Accuracy:</span>
+            <span id="acc-span"></span><span>%</span>
+        </div>
+    </div>
+</div>
+<div class="container m-5">
+    <div class="d-flex flex-row justify-content-center flex-wrap" id="user-sentence">
+        
+    </div>
+</div>
+<script>   
+    document.addEventListener("DOMContentLoaded", () => {
+        const results = `{{ results|safe }}`
+        let resultsData = JSON.parse(results)
+        let wpmDiv = document.getElementById("wpm-span")
+        wpmDiv.innerHTML = resultsData.testStats.speed
+        let rawWpmDiv = document.getElementById("raw-wpm-span")
+        rawWpmDiv.innerHTML = resultsData.testStats.rawSpeed
+        let accDiv = document.getElementById("acc-span")
+        accDiv.innerHTML = resultsData.testStats.accuracy
+        let userSentence = document.getElementById('user-sentence')
+        resultsData.wordStats.map((x, i) => {
+            const col = document.createElement('div')
+            col.classList.add('flex-column')
+            const span = document.createElement('span')
+            span.textContent  = x.wordData.correctWord
+            col.classList.add('small-margin')
+            span.addEventListener("mouseover", () => {
+                span.textContent  =  x.wordData.speed
+            })   
+            span.addEventListener("mouseout", () => {
+                span.textContent  = x.wordData.correctWord 
+
+            })
+            const space = document.createElement('span')
+            space.innerHTML = '&nbsp;'
+            const br = document.createElement('br')
+            const incorrectWord = document.createElement('span')
+            incorrectWord.innerText = x.wordData.incorrectWord
+            if (x.wordData.wordCorrect == true) {
+                incorrectWord.classList.add('text-success')
+            } else {
+                incorrectWord.classList.add('text-danger')
+            }
+            col.appendChild(span)
+            col.appendChild(space)
+            col.appendChild(br)
+            col.appendChild(incorrectWord)
+            col.appendChild(space)
+            userSentence.appendChild(col) 
+        })
+
+
+    })
+</script>
 {% endblock%}

@@ -15,11 +15,6 @@ body {
     max-width: 700px;
 }
 
-
-.quote-input:focus {
-    border-color: black;
-}
-
 .correct {
     color: green;
 }

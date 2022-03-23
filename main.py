@@ -1,6 +1,6 @@
-from website import create_app
+from website import setup
 
-app = create_app()
+app = setup()
 app.app_context().push()
 
 if __name__ == '__main__':

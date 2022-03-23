@@ -15,7 +15,7 @@ def login():
         # A post request takes data from the site to the server
         # It occurs 
         email = request.form.get('email') # retrieves the text from the form
-        password = request.form.get('password1')
+        password = request.form.get('password1')  
 
         user = User.query.filter_by(email=email).first() # Retrieves that user from the database, using email
         statement = db.session.query(User.id).filter(User.email == 'foo@example.com')
@@ -67,7 +67,7 @@ def sign_up():
             db.session.commit()
             flash('Account created!.', category='success')
             login_user(newUser)
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('views.home'))
             
     return render_template("sign_up.html", user=current_user, email=email)
 

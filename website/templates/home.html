@@ -43,9 +43,6 @@
       let numOfExtraCharacters = currentSpan.parentElement.getAttribute("extraCharacters")
       let whichLetter = currentSpan.getAttribute("word-char-num") // gets the index of the letter within its word
       let currentCharinSpan = currentSpan.innerText // gets the letter as a character
-      // stores the element that is the character which has been typed
-      // as a variable
-  
       if (event.key.length === 1 && (charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122)) {  // makes sure the key pressed is a letter
         // key length has to be one because the key "alt" has the same charcode as "a", the charcode values filter for letters  
         if (isStart === true) {
@@ -124,12 +121,9 @@
           currentSpan.classList.remove("incorrect");
           typedWord.pop()
         }
-      } else if (event.key === "Backspace" && event.ctrlKey === True) {
-
       }
 
       if (event.key === " ") {
-       
         for (let i = 0; i < wordsDict[whichWordNo].word.length; i++) { 
           // This fills in all the letters into the array that were typed correctly
           if (typeof incorrectCharacters[i] === "undefined") {
@@ -137,42 +131,35 @@
             
           }
         }
-        // incorrectCharacters.forEach((element) => {
-        //   if 
-        // }
-        incorrectCharacters = incorrectCharacters.join('')
+        incorrectCharacters = incorrectCharacters.join('') // turns the list of characters into a string
         wordsDict[whichWordNo].incorrectWord = incorrectCharacters
 
-        if (currentSpan.getAttribute("is-space")) {
+        if (currentSpan.innerHTML == "&nbsp;") {
           // If the word is finished, and space is on the right place
           // save the word time
           OldKeystrokeTime = new Date().getTime()
           let wordTimeEnd = new Date().getTime()
           let wordTime = wordTimeEnd - wordTimeStart
           wordsDict[whichWordNo].wordTime = wordTime
-          backstop = charnum + 1 // set the backstop
           if (document.querySelector(`span[data-char-num="${charnum}"]`) !== null) { 
             // increment if not the last letter
             charnum++
           } 
 
-        } else if (!(currentSpan.getAttribute("is-space"))) {
-
+        } else if (!(currentSpan.innerHTML == "&nbsp;")) {
           if (!(whichWordNo == (wordsDict.length-1))) {
+            // Moves to the start of the next word if space is entered early in the word
             while (whichLetter != 0) {
-              console.log("while at 144 is running")
               charnum++
               startOfNextWord = document.querySelector(`span[data-char-num="${charnum}"]`)
               whichLetter = startOfNextWord.getAttribute("word-char-num")
             }
             OldKeystrokeTime = new Date().getTime()
             let wordTimeEnd = new Date().getTime()
-            backstop = charnum + 1 // set the backstop
           }
         }
-        typedWord = typedWord.join("")
-        wordsDict[whichWordNo].typedWord = typedWord
-
+        typedWord = typedWord.join("")  // puts the typed work list into a string
+        wordsDict[whichWordNo].typedWord = typedWord  
 
 
         backstop = charnum
@@ -187,18 +174,18 @@
           theData = processTest(wordsDict, testTime)
           
 
-          const form = document.createElement('form');
-          form.method = 'POST';
-          form.action = '/';
+          const form = document.createElement('form')
+          form.method = 'POST'
+          form.action = '/'
 
-          const formInput = document.createElement('input');
-          formInput.type = 'hidden';
-          formInput.name = 'theData';
-          formInput.value = theData;
+          const formInput = document.createElement('input')
+          formInput.type = 'hidden'
+          formInput.name = 'theData'
+          formInput.value = theData
 
-          form.appendChild(formInput);
-          document.body.appendChild(form);
-          form.submit();
+          form.appendChild(formInput)
+          document.body.appendChild(form)
+          form.submit()
           
         }
       }
